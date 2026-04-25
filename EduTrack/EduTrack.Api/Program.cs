@@ -1,12 +1,14 @@
 using DbUp;
 using EduTrack.Api.Data;
+using EduTrack.Api.Validators;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(connectionString!));
-
+builder.Services.AddValidatorsFromAssemblyContaining<CreateStudentRequestValidator>();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
