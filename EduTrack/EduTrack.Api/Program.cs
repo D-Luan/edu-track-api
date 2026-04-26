@@ -3,17 +3,20 @@ using EduTrack.Api.Data;
 using EduTrack.Api.Validators;
 using EduTrack.Api.Middlewares;
 using FluentValidation;
+using EduTrack.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(connectionString!));
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateStudentRequestValidator>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -35,7 +38,11 @@ if (!result.Successful)
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "EduTrack API v1");
+    });
 }
 
 app.UseHttpsRedirection();
