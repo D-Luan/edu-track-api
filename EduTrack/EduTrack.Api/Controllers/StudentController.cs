@@ -75,4 +75,20 @@ public class StudentController(
 
         return NoContent();
     }
+
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteStudent(int id)
+    {
+        var student = await studentRepository.GetByIdAsync(id);
+        if (student is null)
+        {
+            return NotFound(new { Message = $"Student with ID {id} was not found." });
+        }
+
+        await studentRepository.DeleteAsync(id);
+
+        return NoContent();
+    }
 }

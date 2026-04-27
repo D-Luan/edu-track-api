@@ -89,4 +89,10 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
         var sql = "UPDATE Student SET Name = @Name, Email = @Email WHERE Id = @Id;";
         await connection.ExecuteAsync(sql, new { student.Name, student.Email, student.Id });
     }
+    public async Task DeleteAsync(int id)
+    {
+        using var connection = connectionFactory.CreateConnection();
+        var sql = "DELETE FROM Student WHERE Id = @Id";
+        await connection.ExecuteAsync(sql, new { Id = id });
+    }
 }

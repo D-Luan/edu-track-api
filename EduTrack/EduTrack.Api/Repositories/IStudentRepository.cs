@@ -13,4 +13,5 @@ public interface IStudentRepository
     Task<StudentDto> CreateAsync(Student student);
     Task<Student?> GetByIdAsync(int id);
     Task UpdateAsync(Student student);
+    Task DeleteAsync(int id);
 }
