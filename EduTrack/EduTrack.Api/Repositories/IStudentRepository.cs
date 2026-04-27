@@ -7,4 +7,6 @@ public interface IStudentRepository
 {
     Task<StudentWithCoursesDto?> GetStudentWithCoursesAsync(int studentId);
     Task<StudentDto> CreateAsync(Student student);
+    Task<Student?> GetEntityByIdAsync(int id);
+    Task UpdateAsync(Student student);
 }

@@ -66,4 +66,28 @@ public class StudentController(
 
         return Ok(studentDto);
     }
+
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateStudent(int id, [FromBody] CreateStudentRequest request)
+    {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
+        var student = await repository.GetEntityByIdAsync(id);
+        if (student is null)
+        {
+            return NotFound(new { Message = $"Student with ID {id} was not found." });
+        }
+
+        student.UpdateInfo(request.Name, request.Email);
+
+        await repository.UpdateAsync(student);
+
+        return NoContent();
+    }
 }

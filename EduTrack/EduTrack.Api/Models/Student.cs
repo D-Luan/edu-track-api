@@ -16,6 +16,11 @@ public class Student
 
     public Student(string name, string email)
     {
+        UpdateInfo(name, email);
+    }
+
+    public void UpdateInfo(string name, string email)
+    {
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentException("Name cannot be empty");

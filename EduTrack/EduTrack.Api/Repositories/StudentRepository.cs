@@ -92,4 +92,18 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
 
         return new StudentDto(generatedId, student.Name, student.Email);
     }
+
+    public async Task<Student?> GetEntityByIdAsync(int id)
+    {
+        using var connection = connectionFactory.CreateConnection();
+        var sql = "SELECT Id, Name, Email FROM Student WHERE Id = @Id;";
+        return await connection.QuerySingleOrDefaultAsync<Student>(sql, new { Id = id });
+    }
+
+    public async Task UpdateAsync(Student student)
+    {
+        using var connection = connectionFactory.CreateConnection();
+        var sql = "UPDATE Student SET Name = @Name, Email = @Email WHERE Id = @Id;";
+        await connection.ExecuteAsync(sql, new { student.Name, student.Email, student.Id });
+    }
 }
