@@ -44,7 +44,7 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
                 // 3. I return the student instance from the dictionary.
                 if (!studentDictionary.TryGetValue(student.Id, out var existingStudent))
                 {
-                    existingStudent = student with { Courses = new List<CourseDto>() };
+                    existingStudent = student; //with { Courses = new List<CourseDto>() };
                     studentDictionary.Add(student.Id, existingStudent);
                 }
 

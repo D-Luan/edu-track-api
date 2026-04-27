@@ -2,7 +2,10 @@
 
 // Outbound DTOs (Read)
 public record StudentDto(int Id, string Name, string Email);
-public record StudentWithCoursesDto(int Id, string Name, string Email, List<CourseDto> Courses);
+public record StudentWithCoursesDto(int Id, string Name, string Email)
+{
+    public List<CourseDto> Courses { get; set; } = new();
+}
 
 // Incoming DTOs (Write)
 public record CreateStudentRequest(string Name, string Email);

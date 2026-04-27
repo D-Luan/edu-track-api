@@ -45,9 +45,25 @@ public class StudentController(
         );
     }
 
+    /// <summary>
+    /// Retrieves a student and their enrolled courses by the specified student identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the student to retrieve.</param>
+    /// <returns>An <see cref="IActionResult"/> containing a <see cref="StudentWithCoursesDto"/> and a status code 200 (OK) if
+    /// the student is found; otherwise, a status code 404 (Not Found) if no student with the specified identifier
+    /// exists.</returns>
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentWithCoursesDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetStudentById(int id)
     {
-        return Ok();
+        var studentDto = await repository.GetStudentWithCoursesAsync(id);
+
+        if (studentDto is null)
+        {
+            return NotFound(new { Message = $"Student with ID {id} was not found." });
+        }
+
+        return Ok(studentDto);
     }
 }
