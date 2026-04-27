@@ -8,4 +8,4 @@ public record StudentWithCoursesDto(int Id, string Name, string Email)
 }
 
 // Incoming DTOs (Write)
-public record CreateStudentRequest(string Name, string Email);
+public record StudentRequestDto(string Name, string Email);

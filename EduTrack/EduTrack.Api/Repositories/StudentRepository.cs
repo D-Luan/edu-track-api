@@ -8,16 +8,7 @@ namespace EduTrack.Api.Repositories;
 
 public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStudentRepository
 {
-    /// <summary>
-    /// Retrieves a student and their enrolled courses by student identifier asynchronously.
-    /// </summary>
-    /// <remarks>The returned object includes the student's basic information and all courses in which the
-    /// student is currently enrolled. If the student does not exist or is not enrolled in any courses, the result is
-    /// null.</remarks>
-    /// <param name="studentId">The unique identifier of the student whose information and courses are to be retrieved.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a StudentWithCoursesDto with the
-    /// student's details and a list of enrolled courses, or null if the student is not found.</returns>
-    public async Task<StudentWithCoursesDto?> GetStudentWithCoursesAsync(int studentId)
+    public async Task<StudentWithCoursesDto?> GetWithCoursesAsync(int id)
     {
         using var connection = connectionFactory.CreateConnection();
 
@@ -44,7 +35,7 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
                 // 3. I return the student instance from the dictionary.
                 if (!studentDictionary.TryGetValue(student.Id, out var existingStudent))
                 {
-                    existingStudent = student; //with { Courses = new List<CourseDto>() };
+                    existingStudent = student;
                     studentDictionary.Add(student.Id, existingStudent);
                 }
 
@@ -55,21 +46,13 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
                 
                 return existingStudent;
             },
-            param: new { Id = studentId },
+            param: new { Id = id },
             splitOn: "Id"
         );
         
         return studentDictionary.Values.FirstOrDefault();
     }
 
-    /// <summary>
-    /// Asynchronously creates a new student record in the database and returns a data transfer object representing the
-    /// created student.
-    /// </summary>
-    /// <param name="student">The student entity containing the name and email to be added. The Name and Email properties must not be null or
-    /// empty.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a StudentDto with the generated
-    /// student ID, name, and email.</returns>
     public async Task<StudentDto> CreateAsync(Student student)
     {
         using var connection = connectionFactory.CreateConnection();
@@ -80,7 +63,7 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
             VALUES (@Name, @Email);
         ";
 
-        // Dapper executes the query and captures only the first column of the first row (the ID)
+        // Dapper executes the query to create a new student and captures only the first column of the first row (the ID)
         var generatedId = await connection.ExecuteScalarAsync<int>(
             sql,
             param: new
@@ -93,7 +76,7 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
         return new StudentDto(generatedId, student.Name, student.Email);
     }
 
-    public async Task<Student?> GetEntityByIdAsync(int id)
+    public async Task<Student?> GetByIdAsync(int id)
     {
         using var connection = connectionFactory.CreateConnection();
         var sql = "SELECT Id, Name, Email FROM Student WHERE Id = @Id;";

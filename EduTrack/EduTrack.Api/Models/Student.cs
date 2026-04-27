@@ -8,7 +8,7 @@ public class Student
     public string Name { get; private set; }
     public string Email { get; private set; }
 
-    // DDD: private collection to protect internal state. No one from the outside can directy use ".Add()".
+    // Private collection to protect internal state. No one from the outside can directy use ".Add()".
     private readonly List<Course> _courses = new();
     public IReadOnlyCollection<Course> Courses => _courses.AsReadOnly();
 
@@ -19,6 +19,11 @@ public class Student
         UpdateInfo(name, email);
     }
 
+    /// <summary>
+    /// Updates the user's name and email address with the specified values.
+    /// </summary>
+    /// <exception cref="ArgumentException">Thrown if the name is null, empty, or consists only of white-space characters, or if the email is not in a valid
+    /// email format.</exception>
     public void UpdateInfo(string name, string email)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -38,7 +43,6 @@ public class Student
     /// <summary>
     /// Enrolls the student in the specified course.
     /// </summary>
-    /// <param name="course">The course to enroll the student in. Cannot be null. The student must not already be enrolled in this course.</param>
     /// <exception cref="InvalidOperationException">Thrown if the student is already enrolled in the specified course.</exception>
     public void EnrollIn(Course course)
     {

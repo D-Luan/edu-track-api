@@ -11,7 +11,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(connectionString!));
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateStudentRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<StudentRequestValidator>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
