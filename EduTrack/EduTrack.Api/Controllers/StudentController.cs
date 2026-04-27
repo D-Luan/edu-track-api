@@ -19,7 +19,6 @@ public class StudentController(
     public async Task<IActionResult> CreateStudent([FromBody] StudentRequestDto request)
     {
         var validationResult = await studentValidator.ValidateAsync(request);
-
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
@@ -43,7 +42,6 @@ public class StudentController(
     public async Task<IActionResult> GetStudentById(int id)
     {
         var student = await studentRepository.GetWithCoursesAsync(id);
-
         if (student is null)
         {
             return NotFound(new { Message = $"Student with ID {id} was not found." });
@@ -88,7 +86,6 @@ public class StudentController(
         }
 
         await studentRepository.DeleteAsync(id);
-
         return NoContent();
     }
 }
