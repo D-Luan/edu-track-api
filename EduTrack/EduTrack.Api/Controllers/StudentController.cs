@@ -27,12 +27,14 @@ public class StudentController(
         // Transforms the DTO into a rich domain object.
         // If the name or email address is invalid, the student class will throw an ArgumentException
         var student = new Student(request.Name, request.Email);
-        var createdStudent = await studentRepository.CreateAsync(student);
+        var generatedId = await studentRepository.CreateAsync(student);
+
+        var response = new StudentDto(generatedId, student.Name, student.Email);
 
         return CreatedAtAction(
             nameof(GetStudentById),
-            new { id = createdStudent.Id },
-            createdStudent
+            new { id = generatedId },
+            response
         );
     }
 

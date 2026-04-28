@@ -53,7 +53,7 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
         return studentDictionary.Values.FirstOrDefault();
     }
 
-    public async Task<StudentDto> CreateAsync(Student student)
+    public async Task<int> CreateAsync(Student student)
     {
         using var connection = connectionFactory.CreateConnection();
 
@@ -73,7 +73,7 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
             }
         );
 
-        return new StudentDto(generatedId, student.Name, student.Email);
+        return generatedId;
     }
 
     public async Task<Student?> GetByIdAsync(int id)

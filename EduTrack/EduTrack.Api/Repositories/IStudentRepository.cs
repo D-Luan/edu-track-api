@@ -10,7 +10,7 @@ public interface IStudentRepository
     /// </summary>
     /// <remarks>Returns null if the student does not exist or is not enrolled in any courses.</remarks>
     Task<StudentWithCoursesDto?> GetWithCoursesAsync(int id);
-    Task<StudentDto> CreateAsync(Student student);
+    Task<int> CreateAsync(Student student);
     Task<Student?> GetByIdAsync(int id);
     Task UpdateAsync(Student student);
     Task DeleteAsync(int id);
