@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace EduTrack.Api.Middlewares;
 
@@ -34,6 +35,13 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             problemDetails.Status = StatusCodes.Status409Conflict;
             problemDetails.Title = "Domain Conflict";
             problemDetails.Detail = exception.Message;
+        }
+        // Dabatese Rules
+        else if (exception is SqlException sqlEx && sqlEx.Number == 547)
+        {
+            problemDetails.Status = StatusCodes.Status409Conflict;
+            problemDetails.Title = "Database Conflict";
+            problemDetails.Detail = "This record cannot be deleted because it has active dependencies in the system.";
         }
         // Fallback for unexpected bugs
         else
