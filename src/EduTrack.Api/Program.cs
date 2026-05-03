@@ -9,6 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
+}
+
 builder.Services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(connectionString!));
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddValidatorsFromAssemblyContaining<StudentRequestValidator>();
@@ -36,7 +41,7 @@ if (!result.Successful)
     Console.ResetColor();
 }
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
