@@ -4,13 +4,17 @@
 name: Build and deploy ASP.Net Core app to Azure Web App - edutrack-api
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Edutrack CI"]
+    types:
+      - completed
     branches:
       - main
   workflow_dispatch:
 
 jobs:
   build:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
@@ -27,11 +31,11 @@ jobs:
         with:
           dotnet-version: '10.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Restore dependencies
+        run: dotnet restore
 
-      - name: dotnet publish
-        run: dotnet publish ./EduTrack.Api/EduTrack.Api.csproj -c Release --no-build -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Publish API
+        run: dotnet publish ./EduTrack.Api/EduTrack.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
