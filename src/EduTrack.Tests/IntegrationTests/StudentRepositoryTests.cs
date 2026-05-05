@@ -40,9 +40,9 @@ public class StudentRepositoryTests(DatabaseFixture fixture) : IClassFixture<Dat
             "INSERT INTO Student (Name, Email) OUTPUT INSERTED.Id VALUES ('Robert', 'robert23@test.com');");
 
         var course1Id = await connection.ExecuteScalarAsync<int>(
-            "INSERT INTO Course (Name) OUTPUT INSERTED.Id VALUES ('C# Backend');");
+            "INSERT INTO Course (Name, Description) OUTPUT INSERTED.Id VALUES ('C# Backend', NULL)");
         var course2Id = await connection.ExecuteScalarAsync<int>(
-            "INSERT INTO Course (Name) OUTPUT INSERTED.Id VALUES ('Azure Cloud');");
+            "INSERT INTO Course (Name, Description) OUTPUT INSERTED.Id VALUES ('Azure Cloud', 'Learn all about Azure Services.');");
 
         await connection.ExecuteAsync(
             "INSERT INTO Enrollment (StudentId, CourseId) VALUES (@sId, @c1Id), (@sId, @c2Id);",
@@ -55,8 +55,14 @@ public class StudentRepositoryTests(DatabaseFixture fixture) : IClassFixture<Dat
         Assert.NotNull(result);
         Assert.Equal("Robert", result.Name);
         Assert.Equal(2, result.Courses.Count);
-        Assert.Contains(result.Courses, c => c.Name == "C# Backend");
-        Assert.Contains(result.Courses, c => c.Name == "Azure Cloud");
+
+        Assert.Contains(result.Courses, c => 
+            c.Name == "C# Backend" &&
+            c.Description is null);
+
+        Assert.Contains(result.Courses, c =>
+            c.Name == "Azure Cloud" &&
+            c.Description == "Learn all about Azure Services.");
     }
 
     [Fact]

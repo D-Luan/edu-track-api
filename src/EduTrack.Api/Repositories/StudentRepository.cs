@@ -15,7 +15,7 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
         var sql = @"
             SELECT
                 s.Id, s.Name, s.Email,
-                c.Id, c.Name
+                c.Id, c.Name, c.Description
             FROM Student s
             LEFT JOIN Enrollment e ON s.Id = e.StudentId
             LEFT JOIN Course c ON e.CourseId = c.Id
