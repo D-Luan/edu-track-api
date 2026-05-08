@@ -8,7 +8,7 @@ namespace EduTrack.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class StudentController(
+public class StudentsController(
     IStudentRepository studentRepository,
     IValidator<StudentRequestDto> studentValidator) : ControllerBase
 {
