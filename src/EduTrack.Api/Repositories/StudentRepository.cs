@@ -83,6 +83,13 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
         return await connection.QuerySingleOrDefaultAsync<Student>(sql, new { Id = id });
     }
 
+    public async Task<IEnumerable<Student>> GetAllAsync()
+    {
+        using var connection = connectionFactory.CreateConnection();
+        var sql = "SELECT Id, Name, Email FROM Student;";
+        return await connection.QueryAsync<Student>(sql);
+    }
+
     public async Task UpdateAsync(Student student)
     {
         using var connection = connectionFactory.CreateConnection();

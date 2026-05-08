@@ -52,6 +52,17 @@ public class StudentController(
         return Ok(student);
     }
 
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<StudentDto>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAllStudents()
+    {
+        var students = await studentRepository.GetAllAsync();
+        var response = students.Select(s => new StudentDto(s.Id, s.Name, s.Email));
+
+        return Ok(response);
+    }
+
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

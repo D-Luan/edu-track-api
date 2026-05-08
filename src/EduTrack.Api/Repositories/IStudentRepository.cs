@@ -12,6 +12,7 @@ public interface IStudentRepository
     Task<StudentWithCoursesDto?> GetWithCoursesAsync(int id);
     Task<int> CreateAsync(Student student);
     Task<Student?> GetByIdAsync(int id);
+    Task<IEnumerable<Student>> GetAllAsync();
     Task UpdateAsync(Student student);
     Task DeleteAsync(int id);
 }
