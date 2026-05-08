@@ -6,4 +6,5 @@ public interface ICourseRepository
 {
     Task<int> CreateAsync(Course course);
     Task<IEnumerable<Course>> GetAllAsync();
+    Task<Course?> GetByIdAsync(int id);
 }

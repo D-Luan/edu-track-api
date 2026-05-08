@@ -34,4 +34,11 @@ public class CourseRepository(ISqlConnectionFactory connectionFactory) : ICourse
         var sql = "SELECT Id, Name, Description FROM Course;";
         return await connection.QueryAsync<Course>(sql);
     }
+
+    public async Task<Course?> GetByIdAsync(int id)
+    {
+        using var connection = connectionFactory.CreateConnection();
+        var sql = "SELECT Id, Name, Description FROM Course WHERE Id = @Id;";
+        return await connection.QuerySingleOrDefaultAsync<Course>(sql, new { Id = id });
+    }
 }

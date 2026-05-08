@@ -1,9 +1,10 @@
 using DbUp;
 using EduTrack.Api.Data;
-using EduTrack.Api.Validators;
+using EduTrack.Api.DTOs;
 using EduTrack.Api.Middlewares;
-using FluentValidation;
 using EduTrack.Api.Repositories;
+using EduTrack.Api.Validators;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
