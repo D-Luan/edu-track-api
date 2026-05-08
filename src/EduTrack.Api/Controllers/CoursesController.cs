@@ -48,10 +48,21 @@ public class CoursesController(
         var course = await courseRepository.GetByIdAsync(id);
         if (course is null)
         {
-            return NotFound(new { Message = $"Student with ID {id} was not found." });
+            return NotFound(new { Message = $"Course with ID {id} was not found." });
         }
 
         var response = new CourseDto(course.Id, course.Name, course.Description);
+
+        return Ok(response);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<CourseDto>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAllCourses()
+    {
+        var courses = await courseRepository.GetAllAsync();
+        var response = courses.Select(c => new CourseDto(c.Id, c.Name, c.Description));
 
         return Ok(response);
     }
