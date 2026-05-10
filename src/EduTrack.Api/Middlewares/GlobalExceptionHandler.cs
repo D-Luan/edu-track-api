@@ -40,8 +40,10 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         else if (exception is SqlException sqlEx && sqlEx.Number == 547)
         {
             problemDetails.Status = StatusCodes.Status409Conflict;
-            problemDetails.Title = "Database Conflict";
-            problemDetails.Detail = "This record cannot be deleted because it has active dependencies in the system.";
+            problemDetails.Title = "Database Constraint Violation";
+            problemDetails.Detail = "The operation failed due to a relational constraint. " +
+                "Either the referenced record does not exist, or it cannot be modified/deleted " +
+                "because it is being used by other records.";
         }
         // Fallback for unexpected bugs
         else
