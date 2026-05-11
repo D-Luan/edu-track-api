@@ -52,13 +52,31 @@ public class StudentsController(
         return Ok(student);
     }
 
+    /// <summary>
+    /// Retrieves a paginated list of students.
+    /// </summary>
+    /// <param name="pageNumber">The current page number (default: 1).</param>
+    /// <param name="pageSize">The number of items per page (default: 10, max: 50).</param>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<StudentDto>))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAllStudents()
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<StudentDto>))]
+    public async Task<IActionResult> GetAllStudents(
+        [FromQuery] int pageNumber = 1, 
+        [FromQuery] int pageSize = 10)
     {
-        var students = await studentRepository.GetAllAsync();
-        var response = students.Select(s => new StudentDto(s.Id, s.Name, s.Email));
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 50) pageSize = 50;
+
+        var pagedStudents = await studentRepository.GetAllAsync(pageNumber, pageSize);
+        var students = pagedStudents.Items.Select(s => new StudentDto(s.Id, s.Name, s.Email));
+
+        var response = new PagedResult<StudentDto>
+        {
+            Items = students,
+            TotalCount = pagedStudents.TotalCount,
+            PageNumber = pagedStudents.PageNumber,
+            PageSize = pagedStudents.PageSize
+        };
 
         return Ok(response);
     }

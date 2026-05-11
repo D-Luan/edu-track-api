@@ -82,12 +82,34 @@ public class StudentRepository(ISqlConnectionFactory connectionFactory) : IStude
         var sql = "SELECT Id, Name, Email FROM Student WHERE Id = @Id;";
         return await connection.QuerySingleOrDefaultAsync<Student>(sql, new { Id = id });
     }
-
-    public async Task<IEnumerable<Student>> GetAllAsync()
+    public async Task<PagedResult<Student>> GetAllAsync(int pageNumber, int pageSize)
     {
         using var connection = connectionFactory.CreateConnection();
-        var sql = "SELECT Id, Name, Email FROM Student;";
-        return await connection.QueryAsync<Student>(sql);
+
+        var offset = (pageNumber - 1) * pageSize;
+
+        var sql = @"
+            SELECT COUNT(1) FROM Student;
+
+            SELECT Id, Name, Email
+            FROM Student
+            ORDER BY Name
+            OFFSET @Offset ROWS
+            FETCH NEXT @PageSize ROWS ONLY;
+        ";
+
+        using var multi = await connection.QueryMultipleAsync(sql, new { offset = offset, PageSize = pageSize });
+
+        var totalCount = await multi.ReadFirstAsync<int>();
+        var students = await multi.ReadAsync<Student>();
+
+        return new PagedResult<Student>
+        {
+            Items = students,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
     }
 
     public async Task UpdateAsync(Student student)
