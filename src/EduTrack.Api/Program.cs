@@ -1,10 +1,11 @@
 using DbUp;
 using EduTrack.Api.Data;
-using EduTrack.Api.DTOs;
+using EduTrack.Api.Extensions;
 using EduTrack.Api.Middlewares;
 using EduTrack.Api.Repositories;
 using EduTrack.Api.Validators;
 using FluentValidation;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,13 @@ builder.Services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(co
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+
+builder.Services.AddHealthChecks()
+    .AddSqlServer(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection")!,
+        name: "Azure SQL Database",
+        tags: new[] { "db", "sql", "sqlserver" });
+
 builder.Services.AddValidatorsFromAssemblyContaining<StudentRequestValidator>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -60,5 +68,10 @@ app.UseAuthorization();
 app.UseExceptionHandler();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = HealthCheckExtensions.WriteJsonResponseAsync
+});
 
 app.Run();
