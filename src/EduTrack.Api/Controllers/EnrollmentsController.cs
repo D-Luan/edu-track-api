@@ -10,7 +10,8 @@ namespace EduTrack.Api.Controllers;
 [Route("api/[controller]")]
 public class EnrollmentsController(
     IEnrollmentRepository enrollmentRepository,
-    IValidator<EnrollmentRequestDto> enrollmentValidator) : ControllerBase
+    IValidator<EnrollmentRequestDto> enrollmentValidator,
+    ILogger<EnrollmentsController> logger) : ControllerBase
 {
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(EnrollmentRequestDto))]
@@ -18,6 +19,8 @@ public class EnrollmentsController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Enroll([FromBody] EnrollmentRequestDto request)
     {
+        logger.LogInformation("Initiating enrollment request. Student: {StudentId}, Course: {CourseId}", request.StudentId, request.CourseId);
+
         var validationResult = await enrollmentValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
@@ -31,6 +34,8 @@ public class EnrollmentsController(
         }
 
         await enrollmentRepository.EnrollAsync(request.StudentId, request.CourseId);
+        logger.LogInformation("Enrollment completed successfully. Student: {StudentId}, Course: {CourseId}", request.StudentId, request.CourseId);
+
         return Ok(new { Message = "Student successfully enrolled!" });
     }
 }

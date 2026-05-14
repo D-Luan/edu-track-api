@@ -10,7 +10,8 @@ namespace EduTrack.Api.Controllers;
 [Route("api/[controller]")]
 public class StudentsController(
     IStudentRepository studentRepository,
-    IValidator<StudentRequestDto> studentValidator) : ControllerBase
+    IValidator<StudentRequestDto> studentValidator,
+    ILogger<StudentsController> logger) : ControllerBase
 {
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(StudentDto))]
@@ -18,6 +19,8 @@ public class StudentsController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateStudent([FromBody] StudentRequestDto request)
     {
+        logger.LogInformation("Starting student creation. Email: {Email}", request.Email);
+
         var validationResult = await studentValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
@@ -28,6 +31,8 @@ public class StudentsController(
         // If the name or email address is invalid, the student class will throw an ArgumentException
         var student = new Student(request.Name, request.Email);
         var generatedId = await studentRepository.CreateAsync(student);
+
+        logger.LogInformation("Student created successfully. ID generated: {StudentId}", generatedId);
 
         var response = new StudentDto(generatedId, student.Name, student.Email);
 
@@ -110,6 +115,8 @@ public class StudentsController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteStudent(int id)
     {
+        logger.LogInformation("Initiating student ID deletion: {StudentId}", id);
+
         var student = await studentRepository.GetByIdAsync(id);
         if (student is null)
         {
@@ -117,6 +124,8 @@ public class StudentsController(
         }
 
         await studentRepository.DeleteAsync(id);
+        logger.LogInformation("Student ID {StudentId} successfully deleted.", id);
+
         return NoContent();
     }
 }

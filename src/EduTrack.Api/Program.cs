@@ -6,6 +6,7 @@ using EduTrack.Api.Repositories;
 using EduTrack.Api.Validators;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,14 @@ builder.Services.AddControllers();
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSerilog((services, loggerConfiguration) => loggerConfiguration
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.ApplicationInsights(
+        services.GetRequiredService<Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration>(),
+        TelemetryConverter.Traces));
 
 var app = builder.Build();
 
@@ -67,6 +76,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.UseExceptionHandler();
+
+app.UseSerilogRequestLogging();
 
 app.MapControllers();
 
