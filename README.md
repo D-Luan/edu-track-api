@@ -75,6 +75,13 @@ The `Enrollment` table uses a composite key to prevent the same student from bei
 
 ## Running Locally
 
+### Testing with Postman
+
+To make testing easier, a Postman collection is included in this repository. It contains all the pre-configured endpoints for Students, Courses, and Enrollments.
+
+1. Select the file located at `docs/EduTrack_Postman_Collection.json`.
+2. Make sure your local API is running, and you are ready to send requests!
+
 ### Prerequisites
 
 - .NET 10 SDK
